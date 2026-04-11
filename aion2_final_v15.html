@@ -430,7 +430,13 @@ function addCharacter(){
   const input = document.getElementById('characterNameInput');
   const name = input.value.trim();
   if(!name){ alert('캐릭터 이름을 입력해주세요.'); return; }
-  const c = {id:uid(), name, power:'', tasks:[]};
+  const c = {
+  id: uid(),
+  name,
+  power: '',
+  itemLevel: '',  // 🔥 이 줄 추가
+  tasks: []
+};
   state.characters.push(c);
   state.selectedCharacterId = c.id;
   input.value = '';
@@ -992,8 +998,8 @@ function renderTable(){
 <div class="char-box">
   <input class="char-input" value="${escapeHtml(c.name || '')}" oninput="c.name=this.value" />
   <div class="stat-row">
-    <input class="stat-input item-level-input" value="${escapeHtml(c.itemLevel || '')}" placeholder="아이템레벨" oninput="c.itemLevel=this.value" />
-    <input class="stat-input power-input" value="${escapeHtml(c.power || '')}" placeholder="전투력" oninput="c.power=this.value" />
+    <input class="stat-input item-level-input" value="${escapeHtml(c.itemLevel || '')}" placeholder="아이템레벨" oninput="c.itemLevel=this.value; saveState()" />
+    <input class="stat-input power-input" value="${escapeHtml(c.power || '')}" placeholder="전투력" oninput="c.power=this.value; saveState()" />
   </div>
 </div>
                   </div>
