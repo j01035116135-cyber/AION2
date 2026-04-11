@@ -311,7 +311,8 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'aion2_homework_tracker_v7';
+const userId = localStorage.getItem("musang_user_id");
+const STORAGE_KEY = `aion2_homework_tracker_${userId}`;
 const PALETTE = ['#6c63b5','#8d5f5f','#9c6d4a','#9a8b4a','#4d7d62','#4a6d9c','#7a5c9b','#9b5c7f','#555a6b'];
 
 const defaultTaskColors = {
