@@ -64,10 +64,25 @@ const SUPABASE_KEY = "sb_publishable_9pL-aHb6w2w-n5l4poOAlw_FeuQk4S2";
     function toEmail(username) {
 async function checkExistingSession() {
   const { data: { session } } = await supabase.auth.getSession();
-  if (session?.user) {
-    localStorage.setItem("musang_user_id", session.user.id);
-    window.location.href = "aion2_final_v15_cloud_wrapper.html";
+
+  if (!session?.user) return;
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("approved")
+    .eq("id", session.user.id)
+    .single();
+
+  if (error || !profile?.approved) {
+    await supabase.auth.signOut();
+    localStorage.removeItem("musang_user_id");
+    localStorage.removeItem("musang_username");
+    setMsg("관리자 승인 대기중입니다.", "err");
+    return;
   }
+
+  localStorage.setItem("musang_user_id", session.user.id);
+  window.location.href = "aion2_final_v15_cloud_wrapper.html";
 }
       return `${username}@musang.local`;
     }
@@ -142,8 +157,29 @@ async function checkExistingSession() {
 
         if (error) throw error;
 
-        localStorage.setItem("musang_user_id", data.user.id);
+localStorage.setItem("musang_user_id", data.user.id);
 localStorage.setItem("musang_username", username);
+
+const { data: profile, error: profileError } = await supabase
+  .from("profiles")
+  .select("approved, role, username")
+  .eq("id", data.user.id)
+  .single();
+
+if (profileError) {
+  await supabase.auth.signOut();
+  setMsg("프로필 확인 실패: " + profileError.message, "err");
+  return;
+}
+
+if (!profile.approved) {
+  await supabase.auth.signOut();
+  localStorage.removeItem("musang_user_id");
+  localStorage.removeItem("musang_username");
+  setMsg("관리자 승인 대기중입니다.", "err");
+  return;
+}
+
 window.location.href = "aion2_final_v15_cloud_wrapper.html";
       } catch (err) {
         setMsg("로그인 실패: " + (err?.message || "알 수 없는 오류"), "err");
