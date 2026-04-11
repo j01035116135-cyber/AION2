@@ -83,13 +83,11 @@ const { data: profile, error } = await supabase
     return;
   }
 
-  localStorage.setItem("musang_user_id", session.user.id);[[]]
+  localStorage.setItem("musang_user_id", session.user.id);
   window.location.href = "aion2_final_v15_cloud_wrapper.html";
 });
     setMsg("Supabase 연결 준비 완료");
-function toEmail(username) {
-  return `${username}@musang.local`;
-}
+
     async function signup() {
       const username = idInput.value.trim();
       const password = pwInput.value.trim();
@@ -229,6 +227,7 @@ async function checkExistingSession() {
   localStorage.setItem("musang_user_id", session.user.id);
   window.location.href = "aion2_final_v15_cloud_wrapper.html";
 }
+checkExistingSession();
   </script>
 </body>
 </html>
