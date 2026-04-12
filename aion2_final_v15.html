@@ -252,7 +252,7 @@
       <div class="section-title">기본 숙제 세트</div>
       <div class="stack">
         <button class="btn-green" type="button" onclick="addPresetTasksToSelected()">선택 캐릭터에 기본 숙제 추가</button>
-        <div class="small muted">⚡오드, 사명, 원정-정복, 초월, 악몽, 각성전, 🌀회랑 -하, 🌀회랑 -중, 슈고, 저주, ⚔️루드라, ⚔️침식</div>
+        <div class="small muted">⚡오드, 사명, 원정-정복, 초월, 악몽, 각성전, 🌀회랑 -하, 🌀회랑 -중, 슈고,  ⚔️루드라, ⚔️침식</div>
       </div>
 
       <div class="divider"></div>
@@ -301,7 +301,7 @@
             <div class="small muted">모든 숫자는 클릭해서 직접 수정 가능</div>
           </div>
           <div class="row">
-            <span class="pill">사명/회랑 체크박스 완료 · 슈고/저주 추가</span>
+            <span class="pill">사명/회랑 체크박스 완료 · 슈고 추가</span>
           </div>
         </div>
         <div id="tableArea"></div>
@@ -327,7 +327,6 @@ const defaultTaskColors = {
   '🌀회랑 -중':'#446f66',
   '⚔️루드라':'#6f3f56',
   '⚔️침식':'#6f3f56',
-  '저주':'#5f518a'
 };
 
 const EXTRA_CHARGE_DEFAULTS = {
@@ -336,7 +335,6 @@ const EXTRA_CHARGE_DEFAULTS = {
   '초월':10,
   '악몽':10,
   '각성전':10,
-  '저주':10,
 };
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
@@ -376,6 +374,10 @@ function loadState(){
     }
     const parsed = JSON.parse(raw);
     if(!parsed.characters) parsed.characters = [];
+    parsed.characters.forEach(c => {
+  if (!c.tasks) return;
+  c.tasks = c.tasks.filter(t => t.name !== '저주');
+});
 parsed.characters.forEach(c => {
   if(!c.tasks) return;
   c.tasks.forEach(t => {
@@ -473,7 +475,6 @@ function addPresetTasksToSelected(){
     { name:'🌀회랑 -하', rewardMax:3, resetRule:'tue_thu_sat_21_reset' },
     { name:'🌀회랑 -중', rewardMax:3, resetRule:'tue_thu_sat_21_reset' },
     { name:'슈고', rewardMax:14, resetRule:'daily_05_plus2' },
-    { name:'저주', rewardMax:7, resetRule:'daily_05_plus1' },
     { name:'⚔️루드라', challengeMax:4, rewardMax:2, resetRule:'weekly_wed_05_reset' },
     { name:'⚔️침식', challengeMax:4, rewardMax:2, resetRule:'weekly_wed_05_reset' }
   ];
@@ -825,10 +826,26 @@ function renderWeekly(){
   `;
 }
 function orderedTaskNames(){
-  const preferred = ['⚡오드','사명','원정-정복','초월','악몽','각성전','🌀회랑 -하','🌀회랑 -중','슈고','저주','⚔️루드라','⚔️침식'];
+  const hiddenTasks = ['저주'];
+
+  const preferred = [
+    '⚡오드','사명','원정-정복','초월','악몽',
+    '각성전','🌀회랑 -하','🌀회랑 -중',
+    '슈고','⚔️루드라','⚔️침식'
+  ];
+
   const all = [];
-  state.characters.forEach(c=>c.tasks.forEach(t=>{ if(!all.includes(t.name)) all.push(t.name); }));
-  return preferred.filter(n=>all.includes(n)).concat(all.filter(n=>!preferred.includes(n)));
+  state.characters.forEach(c => {
+    c.tasks.forEach(t => {
+      if (!hiddenTasks.includes(t.name) && !all.includes(t.name)) {
+        all.push(t.name);
+      }
+    });
+  });
+
+  return preferred
+    .filter(n => !hiddenTasks.includes(n) && all.includes(n))
+    .concat(all.filter(n => !preferred.includes(n) && !hiddenTasks.includes(n)));
 }
 function sampleTaskByName(name){
   for(const c of state.characters){
@@ -931,7 +948,7 @@ if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
     `;
   }
 
-  if(t.name !== '저주' && t.name !== '⚔️루드라' && t.name !== '⚔️침식' && t.chargeMax > 0){
+  if(t.name !== '⚔️루드라' && t.name !== '⚔️침식' && t.chargeMax > 0){
     return `
       <td style="background:${bg}">
         <div class="cell-wrap">
@@ -965,7 +982,7 @@ ${(t.rewardMax > 0 ? t.rewardCurrent === 0 : t.challengeCurrent === 0)
           <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','${targetKey}',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','${targetKey}',1)">-</button>
           <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','${targetKey}',1)" oncontextmenu="changeTaskByContext(event,'${t.id}','${targetKey}',-1)">+</button>
         </div>
-        ${t.name === '저주' ? '' : `<input class="note" value="${escapeHtml(t.note || '')}" placeholder="메모" oninput="t.note=this.value" />`}
+        <input class="note" value="${escapeHtml(t.note || '')}" placeholder="메모" oninput="t.note=this.value" />
       </div>
     </td>
     `;
@@ -1037,7 +1054,6 @@ function ensureSample(){
   addTaskToCharacter(c,{ name:'원정-정복', rewardMax:14, resetRule:'daily_05_plus1' });
   addTaskToCharacter(c,{ name:'초월', rewardMax:7, resetRule:'daily_05_plus1' });
   addTaskToCharacter(c,{ name:'슈고', rewardMax:14, resetRule:'daily_05_plus2' });
-  addTaskToCharacter(c,{ name:'저주', rewardMax:7, resetRule:'daily_05_plus1' });
   saveState();
 }
 
