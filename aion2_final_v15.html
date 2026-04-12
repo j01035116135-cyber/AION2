@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>아이온2 [무쌍] 레기온  v8</title>
+<title>아이온2 [무쌍] 마르쿠탄 by 브루마 (문의)</title>
 <style>
   :root{
     --bg:#05070d;
@@ -62,6 +62,18 @@
   .weekly-box{padding:14px;margin-bottom:12px}
   .weekly-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
   .weekly-grid{display:grid;gap:10px}
+
+  .weekly-summary-layout{display:grid;grid-template-columns:minmax(0,1fr) 500px;gap:14px;align-items:start}
+  .weekly-progress-panel{background:#0d1427;border:1px solid #28365b;border-radius:16px;padding:14px 16px;min-height:100%}
+  .progress-panel-title{font-size:15px;font-weight:900;margin-bottom:12px}
+  .progress-list{display:grid;grid-template-columns:1fr;gap:10px}
+  .progress-card{display:grid;grid-template-columns:110px minmax(0,1fr) 56px;align-items:center;gap:12px;background:#10182c;border:1px solid #2c3b60;border-radius:16px;padding:12px 14px;min-height:0}
+  .progress-bar-track{position:relative;width:100%;height:18px;background:#18233d;border:1px solid #32466f;border-radius:999px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,#7fe08a,#b6ff77);border-radius:999px}
+  .progress-name{font-size:16px;font-weight:900;margin-bottom:8px}
+  .progress-meta{min-width:0}
+  .progress-percent{font-size:22px;font-weight:900;color:#eef2ff;text-align:right}
+  .progress-sub{display:none}
   .week-item{border:1px solid #28365b;border-radius:14px;padding:10px;background:#0d1427}
   .week-item.zero{
     background:linear-gradient(180deg, rgba(170,50,50,.42), rgba(120,30,30,.30)) !important;
@@ -79,7 +91,7 @@
     border-color:#8b7631 !important;
     box-shadow:inset 0 0 0 1px rgba(255,220,120,.10);
   }
-  .w-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:6px}
+  .w-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:10px}
   .w-title{font-weight:900;font-size:17px}
   .check{width:18px;height:18px;cursor:pointer}
   .w-value{
@@ -93,7 +105,7 @@
     overflow:auto;border:1px solid #28365b;border-radius:18px;background:#0d1427;width:fit-content;max-width:100%;
   }
   table{width:max-content;min-width:2200px;border-collapse:collapse}
-  th,td{border:1px solid #314064;padding:8px 6px;text-align:center;vertical-align:middle}
+  th,td{border:1px solid #314064;padding:6px 5px;text-align:center;vertical-align:middle}
   thead th{color:#ddd8ff;min-width:138px;position:relative}
   thead th:first-child{min-width:170px;position:sticky;left:0;z-index:3;background:#222441}
   tbody td:first-child{position:sticky;left:0;background:#10182c;z-index:2;min-width:170px}
@@ -109,7 +121,7 @@
     background:rgba(0,0,0,.20);color:#fff;border:1px solid rgba(255,255,255,.18);
     padding:5px 8px;border-radius:8px;font-size:12px;font-weight:800;
   }
-  .cell-wrap{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:112px}
+  .cell-wrap{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:88px}
   .char-box{display:flex;flex-direction:column;gap:6px;align-items:center}
 .char-input{
   width:128px;
@@ -147,6 +159,58 @@
 .power-input{
   color:#facc15;
 }
+
+.profile-compact-row{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  width:92px;
+  margin:0 auto;
+}
+.profile-summary{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:92px;
+  min-width:92px;
+  background:#070c18;
+  border:1px solid #3b4d7e;
+  border-radius:10px;
+  padding:5px 6px;
+  line-height:1.1;
+  text-align:center;
+  margin:0 auto;
+}
+.profile-summary .level-line{
+  color:#7dd3fc;
+  font-size:12px;
+  font-weight:900;
+  text-align:center;
+  width:100%;
+}
+.profile-summary .power-line{
+  color:#facc15;
+  font-size:12px;
+  font-weight:900;
+  margin-top:3px;
+  text-align:center;
+  width:100%;
+}
+.profile-link-input{
+  width:100%;
+  min-width:0;
+}
+.profile-col{
+  min-width:100px !important;
+  width:100px !important;
+}
+.char-col{
+  min-width:170px !important;
+}
+
   .main-count{
     font-size:21px;font-weight:900;line-height:1;cursor:pointer;
     padding:4px 8px;border-radius:10px;background:#0a101d;border:1px solid #2d3b62;
@@ -155,12 +219,14 @@
     font-size:17px;font-weight:800;color:#d9e0ff;line-height:1;cursor:pointer;
     padding:4px 8px;border-radius:10px;background:#151a28;border:1px solid #2a3350;
   }
+  .sub-count small{display:block;font-size:11px;color:#b8c4eb;margin-top:2px;font-weight:700}
+  .task-header-click{cursor:pointer;}
   .mini-row{display:flex;gap:6px;align-items:center;justify-content:center}
   .mini-btn{
     width:27px;height:27px;border-radius:8px;padding:0;background:#16213b;color:#fff;
     border:1px solid #34456f;font-size:15px;font-weight:900;
   }
-  .cube-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .cube-row{display:flex;gap:8px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
   .cube{
     min-width:72px;padding:8px 10px;border-radius:12px;border:1px solid #3f5388;
     background:#131d35;color:#fff;font-weight:900;cursor:pointer;user-select:none;
@@ -183,9 +249,19 @@
     width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.14);cursor:pointer;
   }
   .swatch.active{outline:2px solid #fff;outline-offset:2px}
+
+  .task-group-ode-header{background:#4d7d62 !important;border-top:3px solid #86c79c !important;border-bottom:3px solid #86c79c !important;}
+  .task-group-ode-header.task-group-start{border-left:3px solid #86c79c !important;}
+  .task-group-ode-header.task-group-end{border-right:3px solid #86c79c !important;}
+  .task-group-ode-cell{background:rgba(77,125,98,.12) !important;border-top:2px solid rgba(134,199,156,.7) !important;border-bottom:2px solid rgba(134,199,156,.7) !important;}
+  .task-group-ode-cell.task-group-start{border-left:3px solid rgba(134,199,156,.9) !important;}
+  .task-group-ode-cell.task-group-end{border-right:3px solid rgba(134,199,156,.9) !important;}
   @media (max-width:1200px){
     .layout{grid-template-columns:1fr}
     .weekly-grid{grid-template-columns:repeat(3,1fr)}
+    .weekly-summary-layout{grid-template-columns:1fr}
+    .progress-list{grid-template-columns:1fr}
+    .weekly-summary-layout{grid-template-columns:1fr}
 .done-label{
   margin-top:4px;
   font-size:13px;
@@ -224,7 +300,7 @@
 <div class="app">
   <div class="topbar">
     <div>
-      <div class="title">아이온2 [무쌍] 레기온</div>
+      <div class="title">아이온2 [무쌍] 마르쿠탄  by 브루마 (문의)</div>
       <div class="sub">가로형 전용 · 숫자 직접 수정 · 체크박스 완료 · ⚡오드 충전 관리</div>
     </div>
 <div class="row">
@@ -243,16 +319,9 @@
           <input id="characterNameInput" type="text" placeholder="캐릭터 이름" style="flex:1" />
           <button class="btn-primary" type="button" onclick="addCharacter()">추가</button>
         </div>
+        <input id="characterProfileUrlInput" type="text" placeholder="AION2TOOL 링크 붙여넣기 (선택)" />
         <div id="characterList" class="character-list"></div>
-        <div class="small muted">캐릭터 이름은 표 안에서 바로 수정할 수 있습니다.</div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="section-title">기본 숙제 세트</div>
-      <div class="stack">
-        <button class="btn-green" type="button" onclick="addPresetTasksToSelected()">선택 캐릭터에 기본 숙제 추가</button>
-        <div class="small muted">⚡오드, 사명, 원정-정복, 초월, 악몽, 각성전, 🌀회랑 -하, 🌀회랑 -중, 슈고,  ⚔️루드라, ⚔️침식</div>
+        <div class="small muted">캐릭터 이름 또는 링크로 추가할 수 있습니다.</div>
       </div>
 
       <div class="divider"></div>
@@ -291,7 +360,10 @@
           </div>
           <div class="legend">좌클릭/버튼: 차감 · 우클릭: 복구</div>
         </div>
-        <div id="weeklyGrid" class="weekly-grid"></div>
+        <div class="weekly-summary-layout">
+          <div id="weeklyGrid" class="weekly-grid"></div>
+          <div id="characterProgressArea" class="weekly-progress-panel"></div>
+        </div>
       </div>
 
       <div class="panel main" style="padding:14px">
@@ -316,22 +388,22 @@ const STORAGE_KEY = `aion2_homework_tracker_${userId}`;
 const PALETTE = ['#6c63b5','#8d5f5f','#9c6d4a','#9a8b4a','#4d7d62','#4a6d9c','#7a5c9b','#9b5c7f','#555a6b'];
 
 const defaultTaskColors = {
-  '⚡오드':'#6a5a34',
-  '사명':'#6f5334',
-  '슈고':'#8b643f',
-  '원정-정복':'#865e3d',
-  '초월':'#5f518a',
-  '악몽':'#7a553d',
-  '각성전':'#475f8c',
-  '🌀회랑 -하':'#3f6f66',
-  '🌀회랑 -중':'#446f66',
+  '⚡오드':'#4f628f',
+  '사명':'#4f628f',
+  '원정':'#4f628f',
+  '초월':'#4f628f',
+  '악몽':'#4f628f',
+  '각성전':'#4f628f',
+  '🌀회랑 -하':'#4f628f',
+  '🌀회랑 -중':'#4f628f',
+  '슈고':'#4f628f',
   '⚔️루드라':'#6f3f56',
   '⚔️침식':'#6f3f56',
 };
 
 const EXTRA_CHARGE_DEFAULTS = {
   '슈고':10,
-  '원정-정복':10,
+  '원정':10,
   '초월':10,
   '악몽':10,
   '각성전':10,
@@ -339,6 +411,8 @@ const EXTRA_CHARGE_DEFAULTS = {
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function normalizeTaskName(name){ return name === '원정-정복' ? '원정' : name; }
+function getDefaultColor(name){ return defaultTaskColors[normalizeTaskName(name)] || '#4a4578'; }
 
 function makeWeekly(name,max){
   return {id:uid(), name, current:max, max, resetRule:'weekly_wed_05_reset', lastResetAppliedKey:null};
@@ -346,8 +420,6 @@ function makeWeekly(name,max){
 function makeDefaultWeeklyTasks(){
   return [
     makeWeekly('일일던전',14),
-    makeWeekly('원정-정복',35),
-    makeWeekly('초월',28),
     makeWeekly('아티쟁',3),
     makeWeekly('나흐마',2),
     makeWeekly('카이라',10),
@@ -374,24 +446,67 @@ function loadState(){
     }
     const parsed = JSON.parse(raw);
     if(!parsed.characters) parsed.characters = [];
-    parsed.characters.forEach(c => {
-  if (!c.tasks) return;
-  c.tasks = c.tasks.filter(t => t.name !== '저주');
-});
-parsed.characters.forEach(c => {
-  if(!c.tasks) return;
-  c.tasks.forEach(t => {
-    if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
-      if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
-      if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
-
-      // 🔥 핵심
-      t.challengeChargeMax = 999;
-      t.rewardChargeMax = 999;
+    if(parsed.taskColors && parsed.taskColors['원정-정복'] && !parsed.taskColors['원정']){
+      parsed.taskColors['원정'] = parsed.taskColors['원정-정복'];
     }
-  });
-});
-    parsed.taskColors = Object.assign({}, defaultTaskColors, parsed.taskColors || {});
+    parsed.characters.forEach(c => {
+      if (!c.tasks) return;
+      c.tasks = c.tasks.filter(t => t.name !== '저주');
+      c.tasks.forEach(t => {
+        t.name = normalizeTaskName(t.name);
+
+        if(t.name === '원정'){
+          t.rewardMax = 14;
+          t.challengeMax = 35;
+          if(typeof t.rewardCurrent !== 'number') t.rewardCurrent = t.rewardMax;
+          if(typeof t.challengeCurrent !== 'number') t.challengeCurrent = t.challengeMax;
+          t.chargeMax = 0;
+          t.chargeCurrent = 0;
+          t.challengeChargeMax = 10;
+          t.rewardChargeMax = 10;
+          if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
+          if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
+        } else if(t.name === '초월'){
+          t.rewardMax = 7;
+          t.challengeMax = 28;
+          if(typeof t.rewardCurrent !== 'number') t.rewardCurrent = t.rewardMax;
+          if(typeof t.challengeCurrent !== 'number') t.challengeCurrent = t.challengeMax;
+          t.chargeMax = 0;
+          t.chargeCurrent = 0;
+          t.challengeChargeMax = 10;
+          t.rewardChargeMax = 10;
+          if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
+          if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
+        } else if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
+          t.challengeChargeMax = 10;
+          t.rewardChargeMax = 10;
+          if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
+          if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
+        } else if(EXTRA_CHARGE_DEFAULTS[t.name]){
+          t.chargeMax = 10;
+          if(typeof t.chargeCurrent !== 'number') t.chargeCurrent = 0;
+          t.challengeChargeMax = 0;
+          t.rewardChargeMax = 0;
+          t.challengeChargeCurrent = 0;
+          t.rewardChargeCurrent = 0;
+        } else {
+          if(typeof t.chargeMax !== 'number') t.chargeMax = 0;
+          if(typeof t.chargeCurrent !== 'number') t.chargeCurrent = 0;
+          t.challengeChargeMax = t.challengeChargeMax || 0;
+          t.rewardChargeMax = t.rewardChargeMax || 0;
+          t.challengeChargeCurrent = t.challengeChargeCurrent || 0;
+          t.rewardChargeCurrent = t.rewardChargeCurrent || 0;
+        }
+      });
+    });
+    parsed.weeklyTasks = (parsed.weeklyTasks || []).filter(w => !['원정','초월'].includes(w.name));
+    parsed.taskColors = Object.assign({}, parsed.taskColors || {}, defaultTaskColors);
+    parsed.characters.forEach(c => {
+      if(!c.tasks) return;
+      c.tasks.forEach(t => {
+        t.color = parsed.taskColors[t.name] || getDefaultColor(t.name);
+      });
+    });
     if(!parsed.weeklyTasks || !parsed.weeklyTasks.length) parsed.weeklyTasks = makeDefaultWeeklyTasks();
     parsed.weeklyTasks.forEach(w => { if (w.name === '전장') w.name = '⚔️전장 (승리)'; });
     const defaultWeekly = makeDefaultWeeklyTasks();
@@ -407,41 +522,78 @@ let state = loadState();
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 function createTask({name, challengeMax=0, rewardMax=0, chargeMax=0, resetRule='none', color=''}) {
+  name = normalizeTaskName(name);
   if(!chargeMax && EXTRA_CHARGE_DEFAULTS[name]) chargeMax = EXTRA_CHARGE_DEFAULTS[name];
-  // 루드라/침식은 별도 충전값 0/0 시작
+
   let challengeChargeMax = 0, challengeChargeCurrent = 0, rewardChargeMax = 0, rewardChargeCurrent = 0;
-if(name === '⚔️루드라' || name === '⚔️침식'){
-  challengeChargeMax = 999;
-  rewardChargeMax = 999;
-}
+
+  if(name === '원정'){
+    if(!rewardMax) rewardMax = 14;
+    if(!challengeMax) challengeMax = 35;
+    chargeMax = 0;
+    challengeChargeMax = 10;
+    rewardChargeMax = 10;
+  } else if(name === '초월'){
+    if(!rewardMax) rewardMax = 7;
+    if(!challengeMax) challengeMax = 28;
+    chargeMax = 0;
+    challengeChargeMax = 10;
+    rewardChargeMax = 10;
+  } else if(name === '⚔️루드라' || name === '⚔️침식'){
+    challengeChargeMax = 10;
+    rewardChargeMax = 10;
+  } else if(chargeMax > 0){
+    chargeMax = 10;
+  }
+
   return {
     id:uid(), name,
     challengeMax, challengeCurrent:challengeMax,
     rewardMax, rewardCurrent:rewardMax,
-    chargeMax, chargeCurrent:chargeMax,
+    chargeMax, chargeCurrent:0,
     challengeChargeMax, challengeChargeCurrent,
     rewardChargeMax, rewardChargeCurrent,
     resetRule, lastResetAppliedKey:null,
-    color:color || state.taskColors[name] || '#4a4578',
+    color:color || state.taskColors[name] || getDefaultColor(name),
     note:''
   };
 }
 function getSelectedCharacter(){ return state.characters.find(c=>c.id===state.selectedCharacterId) || null; }
 
-function addCharacter(){
+async function addCharacter(){
   const input = document.getElementById('characterNameInput');
-  const name = input.value.trim();
-  if(!name){ alert('캐릭터 이름을 입력해주세요.'); return; }
+  const urlInput = document.getElementById('characterProfileUrlInput');
+  const rawName = input.value.trim();
+  const rawUrl = (urlInput?.value || '').trim();
+
+  if(!rawName && !rawUrl){
+    alert('캐릭터 이름 또는 AION2TOOL 링크를 입력해주세요.');
+    return;
+  }
+
+  let profile = null;
+  if(rawUrl){
+    try{
+      profile = await importProfileFromUrl(rawUrl);
+    }catch(err){
+      console.warn(err);
+      alert('링크 불러오기에 실패했습니다. 사이트 차단 또는 외부 사이트 구조 변경일 수 있어요. 이름은 직접 입력해주세요.');
+    }
+  }
+
   const c = {
-  id: uid(),
-  name,
-  power: '',
-  itemLevel: '',  // 🔥 이 줄 추가
-  tasks: []
-};
+    id: uid(),
+    name: rawName || profile?.name || '새 캐릭터',
+    power: profile?.power ? formatPowerCompact(profile.power) : '',
+    itemLevel: profile?.itemLevel || '',
+    profileUrl: rawUrl || '',
+    tasks: []
+  };
+  ensureDefaultTasksForCharacter(c);
   state.characters.push(c);
   state.selectedCharacterId = c.id;
   input.value = '';
+  if(urlInput) urlInput.value = '';
   saveState(); render();
 }
 function removeCharacter(id){
@@ -461,25 +613,173 @@ function updateCharacterField(id,key,value){
   renderCharacterList();
 }
 
+
+function parseNumberText(value){
+  if(!value) return '';
+  const m = String(value).replace(/,/g,'').match(/\d+(?:\.\d+)?/);
+  return m ? m[0] : '';
+}
+
+function formatPowerCompact(value){
+  const num = Number(String(value || '').replace(/,/g,''));
+  if(!Number.isFinite(num) || num <= 0) return '';
+  if(num >= 1000){
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return String(Math.round(num));
+}
+function getProfileSummaryHtml(c){
+  const itemLevel = c.itemLevel ? 'Lv ' + escapeHtml(String(c.itemLevel)) : 'Lv -';
+  const power = c.power ? escapeHtml(formatPowerCompact(c.power) || String(c.power)) : '-';
+  return `
+    <div class="profile-summary" title="아이템레벨 / 전투력">
+      <div class="level-line">${itemLevel}</div>
+      <div class="power-line">${power}</div>
+    </div>
+  `;
+}
+function decodeNameFromProfileUrl(url){
+  try{
+    const clean = url.split('?')[0].replace(/\/$/, '');
+    const last = clean.substring(clean.lastIndexOf('/') + 1);
+    return decodeURIComponent(last || '').trim();
+  }catch(e){
+    return '';
+  }
+}
+async function fetchProfileHtml(url){
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://r.jina.ai/http://${url.replace(/^https?:\/\//,'')}`
+  ];
+  let lastError = null;
+  for(const proxyUrl of proxies){
+    try{
+      const res = await fetch(proxyUrl);
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const html = await res.text();
+      if(html && html.length > 200) return html;
+    }catch(err){
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('프로필 HTML을 가져오지 못했습니다.');
+}
+function extractProfileFromHtml(html, fallbackUrl=''){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const text = (doc.body?.innerText || doc.documentElement?.textContent || '').replace(/\s+/g, ' ').trim();
+
+  const patterns = {
+    itemLevel: [
+      /아이템\s*레벨[^\d]{0,20}([\d.,]+)/i,
+      /item\s*level[^\d]{0,20}([\d.,]+)/i
+    ],
+    power: [
+      /달성\s*최고\s*전투력[^\d]{0,20}([\d.,]+)/i,
+      /전투력[^\d]{0,20}([\d.,]+)/i,
+      /power[^\d]{0,20}([\d.,]+)/i
+    ]
+  };
+
+  function findByPatterns(list){
+    for(const p of list){
+      const m = text.match(p);
+      if(m && m[1]) return parseNumberText(m[1]);
+    }
+    return '';
+  }
+
+  const name = decodeNameFromProfileUrl(fallbackUrl) || '';
+  const itemLevel = findByPatterns(patterns.itemLevel);
+  const power = findByPatterns(patterns.power);
+  return { name, itemLevel, power };
+}
+async function importProfileFromUrl(url, targetCharacterId=null){
+  const html = await fetchProfileHtml(url);
+  const profile = extractProfileFromHtml(html, url);
+  profile.profileUrl = url;
+
+  if(targetCharacterId){
+    const c = state.characters.find(x=>x.id===targetCharacterId);
+    if(!c) throw new Error('캐릭터를 찾지 못했습니다.');
+    if(profile.name) c.name = profile.name;
+    if(profile.itemLevel) c.itemLevel = profile.itemLevel;
+    if(profile.power) c.power = formatPowerCompact(profile.power);
+    c.profileUrl = url;
+    saveState();
+    render();
+  }
+  return profile;
+}
+async function refreshCharacterProfile(characterId){
+  const c = state.characters.find(x=>x.id===characterId);
+  if(!c) return;
+  const url = (c.profileUrl || '').trim();
+  if(!url){
+    alert('먼저 링크를 입력해주세요.');
+    return;
+  }
+  try{
+    await importProfileFromUrl(url, characterId);
+  }catch(err){
+    console.warn(err);
+    alert('링크 불러오기에 실패했습니다. 외부 사이트 차단 또는 구조 변경일 수 있어요.');
+  }
+}
+
+
+async function handleProfileUrlChange(characterId, value){
+  const c = state.characters.find(x=>x.id===characterId);
+  if(!c) return;
+  c.profileUrl = (value || '').trim();
+  saveState();
+  if(c.profileUrl){
+    try{
+      await importProfileFromUrl(c.profileUrl, characterId);
+    }catch(err){
+      console.warn(err);
+    }
+  }else{
+    renderTable();
+  }
+}
+function handleProfileUrlKeydown(event, characterId, value){
+  if(event.key === 'Enter'){
+    event.preventDefault();
+    handleProfileUrlChange(characterId, value);
+  }
+}
 function addTaskToCharacter(character, data){ character.tasks.push(createTask(data)); }
-function addPresetTasksToSelected(){
-  const c = getSelectedCharacter();
-  if(!c){ alert('먼저 캐릭터를 추가해주세요.'); return; }
-  const preset = [
+function getDefaultPresetTasks(){
+  return [
     { name:'⚡오드', rewardMax:840, chargeMax:2000, resetRule:'od_charge' },
     { name:'사명', rewardMax:5, resetRule:'daily_05_reset' },
-    { name:'원정-정복', rewardMax:14, resetRule:'daily_05_plus1' },
-    { name:'초월', rewardMax:7, resetRule:'daily_05_plus1' },
-    { name:'악몽', rewardMax:14, resetRule:'daily_05_plus2' },
-    { name:'각성전', rewardMax:3, resetRule:'weekly_wed_05_reset' },
     { name:'🌀회랑 -하', rewardMax:3, resetRule:'tue_thu_sat_21_reset' },
     { name:'🌀회랑 -중', rewardMax:3, resetRule:'tue_thu_sat_21_reset' },
+    { name:'원정', rewardMax:14, challengeMax:35, resetRule:'daily_05_plus1' },
+    { name:'초월', challengeMax:28, rewardMax:7, resetRule:'daily_05_plus1' },
+    { name:'악몽', rewardMax:14, resetRule:'daily_05_plus2' },
+    { name:'각성전', rewardMax:3, resetRule:'weekly_wed_05_reset' },
     { name:'슈고', rewardMax:14, resetRule:'daily_05_plus2' },
     { name:'⚔️루드라', challengeMax:4, rewardMax:2, resetRule:'weekly_wed_05_reset' },
     { name:'⚔️침식', challengeMax:4, rewardMax:2, resetRule:'weekly_wed_05_reset' }
   ];
-  const exists = new Set(c.tasks.map(t=>t.name));
-  preset.forEach(p=>{ if(!exists.has(p.name)) addTaskToCharacter(c,p); });
+}
+function ensureDefaultTasksForCharacter(character){
+  const exists = new Set((character.tasks || []).map(t=>normalizeTaskName(t.name)));
+  getDefaultPresetTasks().forEach(p=>{
+    const normalized = normalizeTaskName(p.name);
+    if(!exists.has(normalized)){
+      addTaskToCharacter(character, p);
+      exists.add(normalized);
+    }
+  });
+}
+function addPresetTasksToSelected(){
+  const c = getSelectedCharacter();
+  if(!c){ alert('먼저 캐릭터를 추가해주세요.'); return; }
+  ensureDefaultTasksForCharacter(c);
   saveState(); render();
 }
 function addCustomTask(){
@@ -522,7 +822,53 @@ function weeklyComplete(id, checked){
   const w = state.weeklyTasks.find(x=>x.id===id);
   if(!w) return;
   w.current = checked ? 0 : w.max;
+  if(w.segmentStates){
+    w.segmentStates = w.segmentStates.map(() => checked ? 0 : 1);
+  }
   saveState(); renderWeekly();
+}
+
+function ensureWeeklySegmentState(w){
+  if(!w) return;
+  if(w.name === '나흐마'){
+    if(!Array.isArray(w.segmentStates) || w.segmentStates.length !== 2){
+      w.segmentStates = [w.current >= 1 ? 1 : 0, w.current >= 2 ? 1 : 0];
+    }
+    w.current = w.segmentStates.reduce((sum, n) => sum + (n ? 1 : 0), 0);
+    w.max = 2;
+  } else if(w.name === '아티쟁'){
+    if(!Array.isArray(w.segmentStates) || w.segmentStates.length !== 3){
+      w.segmentStates = [w.current >= 1 ? 1 : 0, w.current >= 2 ? 1 : 0, w.current >= 3 ? 1 : 0];
+    }
+    w.current = w.segmentStates.reduce((sum, n) => sum + (n ? 1 : 0), 0);
+    w.max = 3;
+  }
+}
+
+function weeklySetSegment(id, index, nextValue){
+  const w = state.weeklyTasks.find(x => x.id === id);
+  if(!w) return;
+  ensureWeeklySegmentState(w);
+  if(!Array.isArray(w.segmentStates) || index < 0 || index >= w.segmentStates.length) return;
+  w.segmentStates[index] = nextValue ? 1 : 0;
+  w.current = w.segmentStates.reduce((sum, n) => sum + (n ? 1 : 0), 0);
+  saveState();
+  renderWeekly();
+}
+
+function weeklyLeftClickSegment(id, index){
+  const w = state.weeklyTasks.find(x => x.id === id);
+  if(!w) return;
+  ensureWeeklySegmentState(w);
+  if(w.segmentStates[index]) weeklySetSegment(id, index, 0);
+}
+
+function weeklyRightClickSegment(event, id, index){
+  event.preventDefault();
+  const w = state.weeklyTasks.find(x => x.id === id);
+  if(!w) return;
+  ensureWeeklySegmentState(w);
+  if(!w.segmentStates[index]) weeklySetSegment(id, index, 1);
 }
 
 function setNumeric(taskId, key){
@@ -691,9 +1037,9 @@ function applyRuleToTask(task){
   if(task.resetRule === 'daily_05_reset' || task.resetRule === 'weekly_wed_05_reset' || task.resetRule === 'tue_thu_sat_21_reset'){
     if(task.challengeMax > 0) task.challengeCurrent = task.challengeMax;
     if(task.rewardMax > 0) task.rewardCurrent = task.rewardMax;
-    if(task.chargeMax > 0) task.chargeCurrent = task.chargeMax;
-    if(task.challengeChargeMax > 0 || task.challengeChargeCurrent > 0) task.challengeChargeCurrent = task.challengeChargeMax;
-    if(task.rewardChargeMax > 0 || task.rewardChargeCurrent > 0) task.rewardChargeCurrent = task.rewardChargeMax;
+    if(task.chargeMax > 0) task.chargeCurrent = 0;
+    if(task.challengeChargeMax > 0 || task.challengeChargeCurrent > 0) task.challengeChargeCurrent = 0;
+    if(task.rewardChargeMax > 0 || task.rewardChargeCurrent > 0) task.rewardChargeCurrent = 0;
   }else if(task.resetRule === 'daily_05_plus2'){
     task.rewardCurrent = clamp(task.rewardCurrent + 2, 0, task.rewardMax);
   }else if(task.resetRule === 'daily_05_plus1'){
@@ -769,7 +1115,7 @@ function renderCharacterList(){
     <div class="char-item ${c.id===state.selectedCharacterId ? 'active' : ''}">
       <div style="flex:1;cursor:pointer" onclick="selectCharacter('${c.id}')">
         <div class="char-name">${escapeHtml(c.name)}</div>
-        <div class="small muted">${c.power ? '전투력 ' + escapeHtml(c.power) : '전투력 미입력'}</div>
+        <div class="small muted">${c.power ? '전투력 ' + escapeHtml(formatPowerCompact(c.power) || c.power) : '전투력 미입력'}</div>
       </div>
       <button class="btn-red btn-sm" type="button" onclick="removeCharacter('${c.id}')">삭제</button>
     </div>
@@ -779,12 +1125,15 @@ function renderCharacterList(){
 
 function renderWeekly(){
   const el = document.getElementById('weeklyGrid');
-  const missionOrder = ['일일던전','원정-정복','초월','아티쟁','나흐마','카이라','아그로','⚔️전장 (승리)','어비스사냥','시공(🗡️공격)','시공(🛡️방어)'];
-  const purchaseOrder = ['심연의 재련','오드(제작)','원정/초월 충전','미지의 틈새','즉시완료(일던)','즉시완료(악몽)','특수결정','부활석'];
+  const missionOrder = ['일일던전','아티쟁','나흐마','카이라','아그로','⚔️전장 (승리)','어비스사냥','시공(🗡️공격)','시공(🛡️방어)'];
+  const purchaseOrder = ['오드(제작)','심연의 재련','원정/초월 충전','미지의 틈새','즉완권','특수결정','부활석'];
 
-  const missionMap = new Map(state.weeklyTasks.map(w => [w.name, w]));
-  const missions = missionOrder.map(name => missionMap.get(name)).filter(Boolean);
-  const others = purchaseOrder.map(name => missionMap.get(name)).filter(Boolean);
+  const weeklyMap = new Map(state.weeklyTasks.map(w => [w.name, w]));
+  const missions = missionOrder.map(name => weeklyMap.get(name)).filter(Boolean);
+  const instantDaily = weeklyMap.get('즉시완료(일던)');
+  const instantNightmare = weeklyMap.get('즉시완료(악몽)');
+
+  missions.forEach(ensureWeeklySegmentState);
 
   function weeklyCard(w, variant){
     const cls = getMainClass(w.current, w.max);
@@ -794,21 +1143,98 @@ function renderWeekly(){
       : (isDailyDungeon
           ? "background:#111827;border-color:#8b6b2a; box-shadow:inset 0 0 0 1px rgba(234,196,98,.22);"
           : "");
+
+    if(w.name === '나흐마'){
+      const labels = ['토','일'];
+      return `
+        <div class="week-item ${cls}" style="min-width:180px; ${specialBg}">
+          <div class="w-head">
+            <div class="w-title">${escapeHtml(w.name)}</div>
+            <input class="check" type="checkbox" ${w.current === 0 ? 'checked' : ''} onchange="weeklyComplete('${w.id}', this.checked)" />
+          </div>
+          <div class="cube-row" style="margin-top:12px; justify-content:center;">
+            ${labels.map((label, idx) => `
+              <div style="text-align:center;">
+                <div class="cube" onclick="weeklyLeftClickSegment('${w.id}',${idx})" oncontextmenu="weeklyRightClickSegment(event,'${w.id}',${idx})" style="min-width:64px; text-align:center;">
+                  ${w.segmentStates[idx]}
+                </div>
+                <div class="small muted" style="text-align:center; margin-top:4px;">${label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if(w.name === '아티쟁'){
+      const labels = ['화','목','토'];
+      return `
+        <div class="week-item ${cls}" style="min-width:220px; ${specialBg}">
+          <div class="w-head">
+            <div class="w-title">${escapeHtml(w.name)}</div>
+            <input class="check" type="checkbox" ${w.current === 0 ? 'checked' : ''} onchange="weeklyComplete('${w.id}', this.checked)" />
+          </div>
+          <div class="cube-row" style="margin-top:12px; justify-content:center;">
+            ${labels.map((label, idx) => `
+              <div style="text-align:center;">
+                <div class="cube" onclick="weeklyLeftClickSegment('${w.id}',${idx})" oncontextmenu="weeklyRightClickSegment(event,'${w.id}',${idx})" style="min-width:56px; text-align:center;">
+                  ${w.segmentStates[idx]}
+                </div>
+                <div class="small muted" style="text-align:center; margin-top:4px;">${label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
     return `
       <div class="week-item ${cls}" style="min-width:140px; ${specialBg}">
         <div class="w-head">
           <div class="w-title">${escapeHtml(w.name)}</div>
           <input class="check" type="checkbox" ${w.current === 0 ? 'checked' : ''} onchange="weeklyComplete('${w.id}', this.checked)" />
         </div>
-        <div class="small muted">${getRuleLabel(w.resetRule)}</div>
         <div class="row" style="justify-content:center;">
-          <button class="mini-btn" type="button" onclick="changeWeekly('${w.id}',-1)" oncontextmenu="changeWeeklyByContext(event,'${w.id}',1)">-</button>
-          <div class="w-value" style="margin:0; min-width:86px;" onclick="setWeeklyValue('${w.id}')">${w.current}/${w.max}</div>
-          <button class="mini-btn" type="button" onclick="changeWeekly('${w.id}',1)" oncontextmenu="changeWeeklyByContext(event,'${w.id}',-1)">+</button>
+          <div class="w-value" style="margin:0; min-width:86px;" onclick="setWeeklyValue('${w.id}')">${variant === 'purchase' ? w.current : `${w.current}/${w.max}`}</div>
         </div>
       </div>
     `;
   }
+
+  function instantCompleteCard(daily, nightmare){
+    if(!daily || !nightmare) return '';
+    const totalCur = daily.current + nightmare.current;
+    const totalMax = daily.max + nightmare.max;
+    const cls = getMainClass(totalCur, totalMax);
+    return `
+      <div class="week-item ${cls}" style="min-width:220px; background:#151a2a;border-color:#6e5a2f; box-shadow:inset 0 0 0 1px rgba(234,196,98,.12);">
+        <div class="w-head">
+          <div class="w-title">즉완권</div>
+          <input class="check" type="checkbox" ${(daily.current === 0 && nightmare.current === 0) ? 'checked' : ''} onchange="if(this.checked){ weeklyComplete('${daily.id}', true); weeklyComplete('${nightmare.id}', true); } else { weeklyComplete('${daily.id}', false); weeklyComplete('${nightmare.id}', false); }" />
+        </div>
+        <div class="cube-row" style="margin-top:12px; justify-content:center;">
+          <div style="text-align:center;">
+            <div class="cube" onclick="changeWeekly('${daily.id}',-1)" oncontextmenu="changeWeeklyByContext(event,'${daily.id}',1)" style="min-width:84px; text-align:center; margin:0 auto;">
+              ${daily.current}
+              <small>일던 ${daily.max}</small>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div class="cube" onclick="changeWeekly('${nightmare.id}',-1)" oncontextmenu="changeWeeklyByContext(event,'${nightmare.id}',1)" style="min-width:84px; text-align:center; margin:0 auto;">
+              ${nightmare.current}
+              <small>악몽 ${nightmare.max}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  const purchaseHtml = purchaseOrder.map(name => {
+    if(name === '즉완권') return instantCompleteCard(instantDaily, instantNightmare);
+    const w = weeklyMap.get(name);
+    return w ? weeklyCard(w, 'purchase') : '';
+  }).join('');
 
   el.innerHTML = `
     <div style="margin-bottom:12px;">
@@ -820,7 +1246,7 @@ function renderWeekly(){
     <div>
       <div class="section-title" style="margin-bottom:8px;font-size:15px;">주간 구매 / 제작</div>
       <div style="display:flex; gap:10px; overflow-x:auto;">
-        ${others.map(w => weeklyCard(w, 'purchase')).join('')}
+        ${purchaseHtml}
       </div>
     </div>
   `;
@@ -829,9 +1255,8 @@ function orderedTaskNames(){
   const hiddenTasks = ['저주'];
 
   const preferred = [
-    '⚡오드','사명','원정-정복','초월','악몽',
-    '각성전','🌀회랑 -하','🌀회랑 -중',
-    '슈고','⚔️루드라','⚔️침식'
+    '사명','🌀회랑 -하','🌀회랑 -중','⚡오드','원정',
+    '초월','악몽','각성전','슈고','⚔️루드라','⚔️침식'
   ];
 
   const all = [];
@@ -858,7 +1283,6 @@ function renderPalette(name, current){
   const cid = cssId(name);
   return `
     <div class="palette-pop" id="palette-${cid}" data-task="${escapeHtml(name)}">
-      <div class="palette-sub">색상</div>
       <div class="swatches">
         ${PALETTE.map(color => `<div class="swatch ${color===current ? 'active' : ''}" style="background:${color}" onclick="setTaskColor('${escapeHtml(name)}','${color}');closePalette('${escapeHtml(name)}')"></div>`).join('')}
       </div>
@@ -866,19 +1290,24 @@ function renderPalette(name, current){
   `;
 }
 function renderHeader(names){
-  return names.map(name=>{
+  return names.map((name, index)=>{
     const t = sampleTaskByName(name);
-    const color = state.taskColors[name] || (t ? t.color : '#4a4578');
+    let color = state.taskColors[name] || (t ? t.color : getDefaultColor(name));
     const rule = t ? getRuleLabel(t.resetRule) : '';
     const next = t ? getNextResetDate(t.resetRule) : null;
+
+    const odeGroup = ['⚡오드','원정','초월'];
+    const isOdeGroup = odeGroup.includes(name);
+    const isStart = name === '⚡오드';
+    const isEnd = name === '초월';
+
+    if(isOdeGroup) color = '#4d7d62';
+
     return `
-      <th style="background:${color}">
+      <th class="${isOdeGroup ? `task-group-ode-header ${isStart ? 'task-group-start' : ''} ${isEnd ? 'task-group-end' : ''}` : ''} task-header-click" data-task-header="1" style="background:${color}" onclick="if(!event.target.closest('.palette-pop')) togglePalette('${escapeHtml(name)}')">
         <div class="th-title">${escapeHtml(name)}</div>
         <div class="th-sub">${rule}</div>
         <div class="th-sub">${next ? diffText(next) : '리셋 없음'}</div>
-        <div class="head-actions">
-          <button class="head-mini" type="button" onclick="togglePalette('${escapeHtml(name)}')">색상</button>
-        </div>
         ${renderPalette(name, color)}
       </th>
     `;
@@ -889,45 +1318,78 @@ function renderCell(character, taskName){
   const t = character.tasks.find(x=>x.name===taskName);
   if(!t) return `<td><div class="cell-wrap"><span class="muted small">-</span></div></td>`;
 
-  const mainCls = t.rewardMax > 0 ? getMainClass(t.rewardCurrent, t.rewardMax) : getMainClass(t.challengeCurrent, t.challengeMax);
+  const baseCurrent = t.rewardMax > 0 ? t.rewardCurrent : t.challengeCurrent;
+  const baseMax = t.rewardMax > 0 ? t.rewardMax : t.challengeMax;
+  const mainCls = getMainClass(baseCurrent, baseMax);
   const bg = mainCls === 'zero' ? 'rgba(146,61,61,.16)' : mainCls === 'warn' ? 'rgba(120,100,36,.14)' : 'transparent';
 
-if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
-  return `
-    <td style="background:${bg}">
-      <div class="cell-wrap">
-        <div class="cube-row">
-          <div>
-            <div class="cube" onclick="changeTaskCount('${t.id}','challengeCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','challengeCurrent',1)">
-              ${t.challengeCurrent}/${t.challengeMax}
-              <small>도전</small>
+  let cellAccent = '';
+  if(t.name === '사명'){
+    cellAccent = 'border:2px solid #d7b14a; box-shadow: inset 0 0 0 1px rgba(255,230,140,.18); border-radius:14px; padding:8px;';
+  }
+
+  const odeGroup = ['⚡오드','원정','초월'];
+  const isOdeGroup = odeGroup.includes(t.name);
+  const tdGroupClass = isOdeGroup
+    ? `task-group-ode-cell ${t.name === '⚡오드' ? 'task-group-start' : ''} ${t.name === '초월' ? 'task-group-end' : ''}`
+    : '';
+
+  if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
+    return `
+      <td class="${tdGroupClass}" style="background:${bg}">
+        <div class="cell-wrap" style="${cellAccent}">
+          <div class="cube-row">
+            <div>
+              <div class="cube" onclick="changeTaskCount('${t.id}','challengeCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','challengeCurrent',1)">
+                ${t.challengeCurrent}/${t.challengeMax}
+                <small>도전횟수</small>
+              </div>
+              <div class="sub-count" onclick="setNumeric('${t.id}','challengeChargeCurrent')">(${t.challengeChargeCurrent})</div>
             </div>
-            <div class="sub-count" onclick="setNumeric('${t.id}','challengeChargeCurrent')">(${t.challengeChargeCurrent})</div>
-          </div>
-          <div>
-            <div class="cube" onclick="changeTaskCount('${t.id}','rewardCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',1)">
-              ${t.rewardCurrent}/${t.rewardMax}
-              <small>큐브</small>
+            <div>
+              <div class="cube" onclick="changeTaskCount('${t.id}','rewardCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',1)">
+                ${t.rewardCurrent}/${t.rewardMax}
+                <small>보상횟수</small>
+              </div>
+              <div class="sub-count" onclick="setNumeric('${t.id}','rewardChargeCurrent')">(${t.rewardChargeCurrent})</div>
             </div>
-            <div class="sub-count" onclick="setNumeric('${t.id}','rewardChargeCurrent')">(${t.rewardChargeCurrent})</div>
           </div>
         </div>
-      </div>
-    </td>
-  `;
-}
+      </td>
+    `;
+  }
+
+  if(t.name === '원정' || t.name === '초월'){
+    return `
+      <td class="${tdGroupClass}" style="background:${bg}">
+        <div class="cell-wrap" style="${cellAccent}">
+          <div class="cube-row">
+            <div>
+              <div class="cube" onclick="changeTaskCount('${t.id}','rewardCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',1)">
+                ${t.rewardCurrent}/${t.rewardMax}
+                <small>보상횟수</small>
+              </div>
+              <div class="sub-count" onclick="setNumeric('${t.id}','rewardChargeCurrent')">(${t.rewardChargeCurrent})</div>
+            </div>
+            <div>
+              <div class="cube" onclick="changeTaskCount('${t.id}','challengeCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','challengeCurrent',1)">
+                ${t.challengeCurrent}/${t.challengeMax}
+                <small>보스처치횟수</small>
+              </div>
+              <div class="sub-count" onclick="setNumeric('${t.id}','challengeChargeCurrent')">(${t.challengeChargeCurrent})</div>
+            </div>
+          </div>
+        </div>
+      </td>
+    `;
+  }
 
   if(t.name === '사명' || t.name === '🌀회랑 -하' || t.name === '🌀회랑 -중'){
     return `
-      <td style="background:${bg}">
-        <div class="cell-wrap">
+      <td class="${tdGroupClass}" style="background:${bg}">
+        <div class="cell-wrap" style="${cellAccent}">
           <input class="check" type="checkbox" ${t.rewardCurrent === 0 ? 'checked' : ''} onchange="completeTask('${t.id}', this.checked)" />
-          <div class="main-count" onclick="setNumeric('${t.id}','rewardCurrent')">${t.rewardCurrent}/${t.rewardMax}</div>
-
-          <div class="mini-row">
-            <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','rewardCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',1)">-</button>
-            <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','rewardCurrent',1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',-1)">+</button>
-          </div>
+          <div class="main-count" onclick="changeTaskCount('${t.id}','rewardCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',1)">${t.rewardCurrent}/${t.rewardMax}</div>
         </div>
       </td>
     `;
@@ -935,8 +1397,8 @@ if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
 
   if(t.name === '⚡오드'){
     return `
-      <td style="background:${bg}">
-        <div class="cell-wrap">
+      <td class="${tdGroupClass}" style="background:${bg}">
+        <div class="cell-wrap" style="${cellAccent}">
           <div class="main-count" onclick="setNumeric('${t.id}','rewardCurrent')">${t.rewardCurrent}</div>
           <div class="sub-count" onclick="setNumeric('${t.id}','chargeCurrent')">(${t.chargeCurrent})</div>
           <div class="mini-row">
@@ -950,17 +1412,11 @@ if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
 
   if(t.name !== '⚔️루드라' && t.name !== '⚔️침식' && t.chargeMax > 0){
     return `
-      <td style="background:${bg}">
-        <div class="cell-wrap">
-          <div class="main-count" onclick="setNumeric('${t.id}','rewardCurrent')">
-  ${t.rewardCurrent}/${t.rewardMax}
-</div>
-${t.rewardCurrent === 0 ? `<div class="done-label">완료</div>` : ''}
+      <td class="${tdGroupClass}" style="background:${bg}">
+        <div class="cell-wrap" style="${cellAccent}">
+          <div class="main-count" onclick="changeTaskCount('${t.id}','rewardCurrent',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',1)">${t.rewardCurrent}/${t.rewardMax}</div>
+          ${t.rewardCurrent === 0 ? `<div class="done-label">완료</div>` : ''}
           <div class="sub-count" onclick="setNumeric('${t.id}','chargeCurrent')">(${t.chargeCurrent})</div>
-          <div class="mini-row">
-            <button class="mini-btn" type="button" onclick="smartSpend('${t.id}')" oncontextmenu="smartSpendContext(event,'${t.id}',true)">-</button>
-            <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','rewardCurrent',1)" oncontextmenu="changeTaskByContext(event,'${t.id}','rewardCurrent',-1)">+</button>
-          </div>
         </div>
       </td>
     `;
@@ -968,24 +1424,16 @@ ${t.rewardCurrent === 0 ? `<div class="done-label">완료</div>` : ''}
 
   const targetKey = t.rewardMax > 0 ? 'rewardCurrent' : 'challengeCurrent';
   return `
-    <td style="background:${bg}">
-      <div class="cell-wrap">
-        <div class="main-count" onclick="setNumeric('${t.id}','${targetKey}')">
-  ${t.rewardMax > 0 ? `${t.rewardCurrent}/${t.rewardMax}` : `${t.challengeCurrent}/${t.challengeMax}`}
-</div>
-
-${(t.rewardMax > 0 ? t.rewardCurrent === 0 : t.challengeCurrent === 0)
-  ? `<div class="done-label">완료</div>`
-  : ''
-}
-        <div class="mini-row">
-          <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','${targetKey}',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','${targetKey}',1)">-</button>
-          <button class="mini-btn" type="button" onclick="changeTaskCount('${t.id}','${targetKey}',1)" oncontextmenu="changeTaskByContext(event,'${t.id}','${targetKey}',-1)">+</button>
+    <td class="${tdGroupClass}" style="background:${bg}">
+      <div class="cell-wrap" style="${cellAccent}">
+        <div class="main-count" onclick="changeTaskCount('${t.id}','${targetKey}',-1)" oncontextmenu="changeTaskByContext(event,'${t.id}','${targetKey}',1)">
+          ${t.rewardMax > 0 ? `${t.rewardCurrent}/${t.rewardMax}` : `${t.challengeCurrent}/${t.challengeMax}`}
         </div>
+        ${(t.rewardMax > 0 ? t.rewardCurrent === 0 : t.challengeCurrent === 0) ? `<div class="done-label">완료</div>` : ''}
         <input class="note" value="${escapeHtml(t.note || '')}" placeholder="메모" oninput="t.note=this.value" />
       </div>
     </td>
-    `;
+  `;
 }
 
 function renderTable(){
@@ -1001,9 +1449,13 @@ function renderTable(){
         <table>
           <thead>
             <tr>
-              <th>
+              <th class="char-col">
                 <div class="th-title">캐릭터</div>
-                <div class="th-sub">이름 수정 / 전투력 입력</div>
+                <div class="th-sub">이름 / 링크</div>
+              </th>
+              <th class="profile-col">
+                <div class="th-title">정보</div>
+                <div class="th-sub">아이템레벨 / 전투력</div>
               </th>
               ${renderHeader(names)}
             </tr>
@@ -1013,12 +1465,13 @@ function renderTable(){
               <tr>
                 <td>
 <div class="char-box">
-  <input class="char-input" value="${escapeHtml(c.name || '')}" oninput="c.name=this.value" />
-  <div class="stat-row">
-    <input class="stat-input item-level-input" value="${escapeHtml(c.itemLevel || '')}" placeholder="아이템레벨" oninput="c.itemLevel=this.value; saveState()" />
-    <input class="stat-input power-input" value="${escapeHtml(c.power || '')}" placeholder="전투력" oninput="c.power=this.value; saveState()" />
-  </div>
+  <input class="char-input" value="${escapeHtml(c.name || '')}" oninput="c.name=this.value; saveState()" />
+  <input class="note profile-link-input" value="${escapeHtml(c.profileUrl || '')}" placeholder="AION2TOOL 링크" onchange="handleProfileUrlChange('${c.id}', this.value)" onkeydown="handleProfileUrlKeydown(event, '${c.id}', this.value)" />
 </div>
+                </td>
+                <td class="profile-col">
+                  <div class="profile-compact-row">
+                    ${getProfileSummaryHtml(c)}
                   </div>
                 </td>
                 ${names.map(name=>renderCell(c,name)).join('')}
@@ -1046,20 +1499,72 @@ function resetAllData(){
 }
 function ensureSample(){
   if(state.characters.length) return;
-  const c = {id:uid(), name:'메인캐릭', power:'', tasks:[]};
+  const c = {id:uid(), name:'메인캐릭', power:'', itemLevel:'', tasks:[]};
+  ensureDefaultTasksForCharacter(c);
   state.characters.push(c);
   state.selectedCharacterId = c.id;
-  addTaskToCharacter(c,{ name:'⚡오드', rewardMax:840, chargeMax:2000, resetRule:'od_charge' });
-  addTaskToCharacter(c,{ name:'사명', rewardMax:5, resetRule:'daily_05_reset' });
-  addTaskToCharacter(c,{ name:'원정-정복', rewardMax:14, resetRule:'daily_05_plus1' });
-  addTaskToCharacter(c,{ name:'초월', rewardMax:7, resetRule:'daily_05_plus1' });
-  addTaskToCharacter(c,{ name:'슈고', rewardMax:14, resetRule:'daily_05_plus2' });
   saveState();
 }
 
 
+
+function getCharacterCompletion(character){
+  let remaining = 0;
+  let total = 0;
+
+  (character.tasks || []).forEach(t => {
+    if(!t) return;
+
+    if(t.name === '⚡오드'){
+      return;
+    }
+
+    if(t.name === '원정' || t.name === '초월' || t.name === '⚔️루드라' || t.name === '⚔️침식'){
+      total += Math.max(0, t.rewardMax || 0) + Math.max(0, t.challengeMax || 0);
+      remaining += Math.max(0, t.rewardCurrent || 0) + Math.max(0, t.challengeCurrent || 0);
+      return;
+    }
+
+    total += Math.max(0, t.rewardMax || 0);
+    remaining += Math.max(0, t.rewardCurrent || 0);
+  });
+
+  const done = Math.max(0, total - remaining);
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+  return {done, total, percent, remaining};
+}
+
+function renderCharacterProgress(){
+  const el = document.getElementById('characterProgressArea');
+  if(!el) return;
+  if(!state.characters.length){
+    el.innerHTML = '<div class="progress-panel-title">캐릭터 진행률</div><div class="small muted">캐릭터를 추가하면 진행률이 표시됩니다.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="progress-panel-title">캐릭터 진행률</div>
+    <div class="progress-list">
+      ${state.characters.map(c => {
+        const stats = getCharacterCompletion(c);
+        return `
+          <div class="progress-card">
+            <div class="progress-name">${escapeHtml(c.name || '캐릭터')}</div>
+            <div class="progress-meta">
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width:${stats.percent}%"></div>
+              </div>
+            </div>
+            <div class="progress-percent">${stats.percent}%</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
 document.addEventListener('click', function(e){
-  const inside = e.target.closest('.palette-pop') || e.target.closest('.head-mini');
+  const inside = e.target.closest('.palette-pop') || e.target.closest('.task-header-click');
   if(!inside){
     document.querySelectorAll('.palette-pop').forEach(el=>el.classList.remove('show'));
   }
@@ -1069,6 +1574,7 @@ function render(){
   applyAllRules();
   renderCharacterList();
   renderWeekly();
+  renderCharacterProgress();
   renderTable();
   renderTop();
 }
@@ -1077,6 +1583,7 @@ render();
 setInterval(function(){
   applyAllRules();
   renderWeekly();
+  renderCharacterProgress();
   renderTable();
   renderTop();
 }, 60000);
