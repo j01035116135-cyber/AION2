@@ -35,39 +35,38 @@
       <div class="small">버튼을 눌렀을 때 메시지가 바뀌면 정상 동작입니다.</div>
     </div>
 
-<div class="card" id="loggedInCard" style="display:none;">
-  <h2>로그인 완료</h2>
-  <div id="welcomeMsg">환영합니다.</div>
-  <div class="row">
-    <button id="logoutBtn" type="button">로그아웃</button>
-  </div>
-</div>
+    <div class="card" id="loggedInCard" style="display:none;">
+      <h2>로그인 완료</h2>
+      <div id="welcomeMsg">환영합니다.</div>
+      <div class="row">
+        <button id="logoutBtn" type="button">로그아웃</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.8";
 
-const SUPABASE_URL = "https://fpkqdodltalcaspqdpqk.supabase.co";
-const SUPABASE_KEY = "sb_publishable_9pL-aHb6w2w-n5l4poOAlw_FeuQk4S2";
+    const SUPABASE_URL = "https://fpkqdodltalcaspqdpqk.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_9pL-aHb6w2w-n5l4poOAlw_FeuQk4S2";
 
     const msg = document.getElementById("msg");
     const idInput = document.getElementById("id");
     const pwInput = document.getElementById("pw");
     const signupBtn = document.getElementById("signupBtn");
     const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     function setMsg(text, cls = "") {
       msg.className = cls;
       msg.textContent = text;
     }
 
-   function toEmail(username) {
-  return `${username}@musang.local`;
-}
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    setMsg("Supabase 연결 준비 완료");
+    function toEmail(username) {
+      return `${username}@musang.local`;
+    }
 
     async function signup() {
       const username = idInput.value.trim();
@@ -95,144 +94,145 @@ const SUPABASE_KEY = "sb_publishable_9pL-aHb6w2w-n5l4poOAlw_FeuQk4S2";
 
         if (error) throw error;
 
-        
         setMsg("가입 완료. 관리자 승인 후 사용 가능합니다.", "ok");
       } catch (err) {
-      const message = err?.message || "알 수 없는 오류";
+        const message = err?.message || "알 수 없는 오류";
 
-if (message.includes("User already registered")) {
-  setMsg("이미 가입된 아이디입니다. 관리자 승인 대기 중이거나 기존 계정일 수 있습니다.", "err");
-} else {
-  setMsg("회원가입 실패: " + message, "err");
-}
+        if (message.includes("User already registered")) {
+          setMsg("이미 가입된 아이디입니다. 관리자 승인 대기 중이거나 기존 계정일 수 있습니다.", "err");
+        } else {
+          setMsg("회원가입 실패: " + message, "err");
+        }
       } finally {
         signupBtn.disabled = false;
         loginBtn.disabled = false;
       }
     }
 
-async function login() {
-  const username = idInput.value.trim();
-  const password = pwInput.value.trim();
+    async function login() {
+      const username = idInput.value.trim();
+      const password = pwInput.value.trim();
 
-  if (!username || !password) {
-    setMsg("아이디와 비밀번호를 입력해주세요.", "err");
-    return;
-  }
+      if (!username || !password) {
+        setMsg("아이디와 비밀번호를 입력해주세요.", "err");
+        return;
+      }
 
-  signupBtn.disabled = true;
-  loginBtn.disabled = true;
-  setMsg("로그인 요청 중...");
+      signupBtn.disabled = true;
+      loginBtn.disabled = true;
+      setMsg("로그인 요청 중...");
 
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: toEmail(username),
-      password
-    });
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: toEmail(username),
+          password
+        });
 
-    if (error) throw error;
+        if (error) throw error;
+        if (!data?.user?.id) throw new Error("로그인 사용자 정보를 찾지 못했습니다.");
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("approved, role, username")
-      .eq("id", data.user.id)
-      .maybeSingle();
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("approved, role, username")
+          .eq("id", data.user.id)
+          .maybeSingle();
 
-    if (profileError) {
-      await supabase.auth.signOut();
-      setMsg("프로필 확인 실패: " + profileError.message, "err");
-      return;
+        if (profileError) {
+          await supabase.auth.signOut();
+          throw new Error("프로필 확인 실패: " + profileError.message);
+        }
+
+        if (!profile || !profile.approved) {
+          await supabase.auth.signOut();
+          localStorage.removeItem("musang_user_id");
+          localStorage.removeItem("musang_username");
+          localStorage.removeItem("musang_role");
+          setMsg("관리자 승인 대기중입니다.", "err");
+          return;
+        }
+
+        localStorage.setItem("musang_user_id", data.user.id);
+        localStorage.setItem("musang_username", profile.username || username);
+        localStorage.setItem("musang_role", profile.role || "user");
+
+        setMsg("로그인 성공. 이동 중...", "ok");
+        window.location.href = "aion2_final_v15_cloud_wrapper.html";
+      } catch (err) {
+        setMsg("로그인 실패: " + (err?.message || "알 수 없는 오류"), "err");
+      } finally {
+        signupBtn.disabled = false;
+        loginBtn.disabled = false;
+      }
     }
 
-    if (!profile || !profile.approved) {
-      await supabase.auth.signOut();
+    async function logout() {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        setMsg("로그아웃 실패: " + error.message, "err");
+        return;
+      }
+
       localStorage.removeItem("musang_user_id");
       localStorage.removeItem("musang_username");
       localStorage.removeItem("musang_role");
-      setMsg("관리자 승인 대기중입니다.", "err");
-      return;
+
+      setMsg("로그아웃 완료", "ok");
+      document.getElementById("authCard").style.display = "block";
+      document.getElementById("loggedInCard").style.display = "none";
     }
 
-    localStorage.setItem("musang_user_id", data.user.id);
-    localStorage.setItem("musang_username", profile.username || username);
-    localStorage.setItem("musang_role", profile.role || "user");
+    async function checkExistingSession() {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-    setMsg("로그인 성공. 이동 중...", "ok");
-    window.location.href = "aion2_final_v15_cloud_wrapper.html";
-  } catch (err) {
-    setMsg("로그인 실패: " + (err?.message || "알 수 없는 오류"), "err");
-  } finally {
-    signupBtn.disabled = false;
-    loginBtn.disabled = false;
-  }
-}
+        if (sessionError) {
+          setMsg("세션 확인 실패: " + sessionError.message, "err");
+          return;
+        }
+
+        if (!session?.user) return;
+
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("approved, role, username")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          await supabase.auth.signOut();
+          localStorage.removeItem("musang_user_id");
+          localStorage.removeItem("musang_username");
+          localStorage.removeItem("musang_role");
+          setMsg("프로필 확인 실패: " + profileError.message, "err");
+          return;
+        }
+
+        if (!profile || !profile.approved) {
+          await supabase.auth.signOut();
+          localStorage.removeItem("musang_user_id");
+          localStorage.removeItem("musang_username");
+          localStorage.removeItem("musang_role");
+          setMsg("관리자 승인 대기중입니다.", "err");
+          return;
+        }
+
+        localStorage.setItem("musang_user_id", session.user.id);
+        localStorage.setItem("musang_username", profile.username || "");
+        localStorage.setItem("musang_role", profile.role || "user");
+
+        window.location.href = "aion2_final_v15_cloud_wrapper.html";
+      } catch (err) {
+        setMsg("세션 확인 실패: " + (err?.message || "알 수 없는 오류"), "err");
+      }
+    }
 
     signupBtn.addEventListener("click", signup);
     loginBtn.addEventListener("click", login);
-const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", logout);
 
-async function logout() {
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    setMsg("로그아웃 실패: " + error.message, "err");
-    return;
-  }
-
-  localStorage.removeItem("musang_user_id");
-  localStorage.removeItem("musang_username");
-  localStorage.removeItem("musang_role");
-
-  setMsg("로그아웃 완료", "ok");
-
-  // 로그인 화면 다시 보여주기
-  document.getElementById("authCard").style.display = "block";
-  document.getElementById("loggedInCard").style.display = "none";
-}
-
-logoutBtn.addEventListener("click", logout);
-
-async function checkExistingSession() {
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-  if (sessionError) {
-    setMsg("세션 확인 실패: " + sessionError.message, "err");
-    return;
-  }
-
-  if (!session?.user) return;
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("approved, role, username")
-    .eq("id", session.user.id)
-    .maybeSingle();
-
-  if (profileError) {
-    await supabase.auth.signOut();
-    localStorage.removeItem("musang_user_id");
-    localStorage.removeItem("musang_username");
-    localStorage.removeItem("musang_role");
-    setMsg("프로필 확인 실패: " + profileError.message, "err");
-    return;
-  }
-
-  if (!profile || !profile.approved) {
-    await supabase.auth.signOut();
-    localStorage.removeItem("musang_user_id");
-    localStorage.removeItem("musang_username");
-    localStorage.removeItem("musang_role");
-    setMsg("관리자 승인 대기중입니다.", "err");
-    return;
-  }
-
-  localStorage.setItem("musang_user_id", session.user.id);
-  localStorage.setItem("musang_username", profile.username || "");
-  localStorage.setItem("musang_role", profile.role || "user");
-
-  window.location.href = "aion2_final_v15_cloud_wrapper.html";
-}
-checkExistingSession();
+    setMsg("Supabase 연결 준비 완료");
+    checkExistingSession();
   </script>
 </body>
 </html>
