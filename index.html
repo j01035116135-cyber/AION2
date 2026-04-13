@@ -113,6 +113,8 @@ const { data: profile, error } = await supabase
         });
 
         if (error) throw error;
+
+        
         setMsg("가입 완료. 관리자 승인 후 사용 가능합니다.", "ok");
       } catch (err) {
       const message = err?.message || "알 수 없는 오류";
@@ -149,8 +151,6 @@ if (message.includes("User already registered")) {
 
         if (error) throw error;
 
-localStorage.setItem("musang_user_id", data.user.id);
-localStorage.setItem("musang_username", username);
 
 const { data: profile, error: profileError } = await supabase
   .from("profiles")
@@ -171,6 +171,10 @@ if (!profile || !profile.approved) {
   setMsg("관리자 승인 대기중입니다.", "err");
   return;
 }
+
+localStorage.setItem("musang_user_id", data.user.id);
+localStorage.setItem("musang_username", profile.username || username);
+localStorage.setItem("musang_role", profile.role || "user");
 
 window.location.href = "aion2_final_v15_cloud_wrapper.html";
       } catch (err) {
