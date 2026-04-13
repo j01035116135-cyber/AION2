@@ -438,88 +438,162 @@ function makeDefaultWeeklyTasks(){
     makeWeekly('부활석',7)
   ];
 }
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw){
-      return {selectedCharacterId:null, characters:[], taskColors:{...defaultTaskColors}, weeklyTasks:makeDefaultWeeklyTasks()};
-    }
-    const parsed = JSON.parse(raw);
-    if(!parsed.characters) parsed.characters = [];
-    if(parsed.taskColors && parsed.taskColors['원정-정복'] && !parsed.taskColors['원정']){
-      parsed.taskColors['원정'] = parsed.taskColors['원정-정복'];
-    }
-    parsed.characters.forEach(c => {
-      if (!c.tasks) return;
-      c.tasks = c.tasks.filter(t => t.name !== '저주');
-      c.tasks.forEach(t => {
-        t.name = normalizeTaskName(t.name);
+const DEFAULT_STATE = {
+  selectedCharacterId: null,
+  characters: [],
+  taskColors: { ...defaultTaskColors },
+  weeklyTasks: makeDefaultWeeklyTasks()
+};
 
-        if(t.name === '원정'){
-          t.rewardMax = 14;
-          t.challengeMax = 35;
-          if(typeof t.rewardCurrent !== 'number') t.rewardCurrent = t.rewardMax;
-          if(typeof t.challengeCurrent !== 'number') t.challengeCurrent = t.challengeMax;
-          t.chargeMax = 0;
-          t.chargeCurrent = 0;
-          t.challengeChargeMax = 10;
-          t.rewardChargeMax = 10;
-          if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
-          if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
-        } else if(t.name === '초월'){
-          t.rewardMax = 7;
-          t.challengeMax = 28;
-          if(typeof t.rewardCurrent !== 'number') t.rewardCurrent = t.rewardMax;
-          if(typeof t.challengeCurrent !== 'number') t.challengeCurrent = t.challengeMax;
-          t.chargeMax = 0;
-          t.chargeCurrent = 0;
-          t.challengeChargeMax = 10;
-          t.rewardChargeMax = 10;
-          if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
-          if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
-        } else if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
-          t.challengeChargeMax = 10;
-          t.rewardChargeMax = 10;
-          if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
-          if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
-        } else if(EXTRA_CHARGE_DEFAULTS[t.name]){
-          t.chargeMax = 10;
-          if(typeof t.chargeCurrent !== 'number') t.chargeCurrent = 0;
-          t.challengeChargeMax = 0;
-          t.rewardChargeMax = 0;
-          t.challengeChargeCurrent = 0;
-          t.rewardChargeCurrent = 0;
-        } else {
-          if(typeof t.chargeMax !== 'number') t.chargeMax = 0;
-          if(typeof t.chargeCurrent !== 'number') t.chargeCurrent = 0;
-          t.challengeChargeMax = t.challengeChargeMax || 0;
-          t.rewardChargeMax = t.rewardChargeMax || 0;
-          t.challengeChargeCurrent = t.challengeChargeCurrent || 0;
-          t.rewardChargeCurrent = t.rewardChargeCurrent || 0;
-        }
-      });
+function normalizeLoadedState(parsed){
+  if(!parsed || typeof parsed !== 'object'){
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+
+  if(!parsed.characters) parsed.characters = [];
+  if(parsed.taskColors && parsed.taskColors['원정-정복'] && !parsed.taskColors['원정']){
+    parsed.taskColors['원정'] = parsed.taskColors['원정-정복'];
+  }
+
+  parsed.characters.forEach(c => {
+    if (!c.tasks) return;
+    c.tasks = c.tasks.filter(t => t.name !== '저주');
+
+    c.tasks.forEach(t => {
+      t.name = normalizeTaskName(t.name);
+
+      if(t.name === '원정'){
+        t.rewardMax = 14;
+        t.challengeMax = 35;
+        if(typeof t.rewardCurrent !== 'number') t.rewardCurrent = t.rewardMax;
+        if(typeof t.challengeCurrent !== 'number') t.challengeCurrent = t.challengeMax;
+        t.chargeMax = 0;
+        t.chargeCurrent = 0;
+        t.challengeChargeMax = 10;
+        t.rewardChargeMax = 10;
+        if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
+        if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
+      } else if(t.name === '초월'){
+        t.rewardMax = 7;
+        t.challengeMax = 28;
+        if(typeof t.rewardCurrent !== 'number') t.rewardCurrent = t.rewardMax;
+        if(typeof t.challengeCurrent !== 'number') t.challengeCurrent = t.challengeMax;
+        t.chargeMax = 0;
+        t.chargeCurrent = 0;
+        t.challengeChargeMax = 10;
+        t.rewardChargeMax = 10;
+        if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
+        if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
+      } else if(t.name === '⚔️루드라' || t.name === '⚔️침식'){
+        t.challengeChargeMax = 10;
+        t.rewardChargeMax = 10;
+        if(typeof t.challengeChargeCurrent !== 'number') t.challengeChargeCurrent = 0;
+        if(typeof t.rewardChargeCurrent !== 'number') t.rewardChargeCurrent = 0;
+      } else if(EXTRA_CHARGE_DEFAULTS[t.name]){
+        t.chargeMax = 10;
+        if(typeof t.chargeCurrent !== 'number') t.chargeCurrent = 0;
+        t.challengeChargeMax = 0;
+        t.rewardChargeMax = 0;
+        t.challengeChargeCurrent = 0;
+        t.rewardChargeCurrent = 0;
+      } else {
+        if(typeof t.chargeMax !== 'number') t.chargeMax = 0;
+        if(typeof t.chargeCurrent !== 'number') t.chargeCurrent = 0;
+        t.challengeChargeMax = t.challengeChargeMax || 0;
+        t.rewardChargeMax = t.rewardChargeMax || 0;
+        t.challengeChargeCurrent = t.challengeChargeCurrent || 0;
+        t.rewardChargeCurrent = t.rewardChargeCurrent || 0;
+      }
     });
-    parsed.weeklyTasks = (parsed.weeklyTasks || []).filter(w => !['원정','초월'].includes(w.name));
-    parsed.taskColors = Object.assign({}, parsed.taskColors || {}, defaultTaskColors);
-    parsed.characters.forEach(c => {
-      if(!c.tasks) return;
-      c.tasks.forEach(t => {
-        t.color = parsed.taskColors[t.name] || getDefaultColor(t.name);
-      });
+  });
+
+  parsed.weeklyTasks = (parsed.weeklyTasks || []).filter(w => !['원정','초월'].includes(w.name));
+  parsed.taskColors = Object.assign({}, parsed.taskColors || {}, defaultTaskColors);
+
+  parsed.characters.forEach(c => {
+    if(!c.tasks) return;
+    c.tasks.forEach(t => {
+      t.color = parsed.taskColors[t.name] || getDefaultColor(t.name);
     });
-    if(!parsed.weeklyTasks || !parsed.weeklyTasks.length) parsed.weeklyTasks = makeDefaultWeeklyTasks();
-    parsed.weeklyTasks.forEach(w => { if (w.name === '전장') w.name = '⚔️전장 (승리)'; });
-    const defaultWeekly = makeDefaultWeeklyTasks();
-    defaultWeekly.forEach(def => {
-      if(!parsed.weeklyTasks.some(w => w.name === def.name)) parsed.weeklyTasks.push(def);
-    });
-    return parsed;
-  }catch(e){
-    return {selectedCharacterId:null, characters:[], taskColors:{...defaultTaskColors}, weeklyTasks:makeDefaultWeeklyTasks()};
+  });
+
+  if(!parsed.weeklyTasks || !parsed.weeklyTasks.length){
+    parsed.weeklyTasks = makeDefaultWeeklyTasks();
+  }
+
+  parsed.weeklyTasks.forEach(w => {
+    if (w.name === '전장') w.name = '⚔️전장 (승리)';
+  });
+
+  const defaultWeekly = makeDefaultWeeklyTasks();
+  defaultWeekly.forEach(def => {
+    if(!parsed.weeklyTasks.some(w => w.name === def.name)){
+      parsed.weeklyTasks.push(def);
+    }
+  });
+
+  return parsed;
+}
+
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+async function loadStateFromCloud(){
+  if(!window.supabaseClient){
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+
+  const { data: authData, error: authError } = await window.supabaseClient.auth.getUser();
+  if(authError || !authData?.user){
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+
+  const user = authData.user;
+
+  const { data, error } = await window.supabaseClient
+    .from('user_homework_data')
+    .select('data')
+    .eq('user_id', user.id)
+    .single();
+
+  if(error){
+    if(error.code === 'PGRST116'){
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+    console.error('loadStateFromCloud error:', error);
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+
+  return normalizeLoadedState(data?.data || JSON.parse(JSON.stringify(DEFAULT_STATE)));
+}
+
+async function saveState(){
+  if(!window.supabaseClient){
+    console.warn('supabaseClient가 없습니다. 저장하지 못했습니다.');
+    return;
+  }
+
+  const { data: authData, error: authError } = await window.supabaseClient.auth.getUser();
+  if(authError || !authData?.user){
+    console.warn('로그인 사용자 정보를 찾지 못했습니다.');
+    return;
+  }
+
+  const user = authData.user;
+
+  const payload = {
+    user_id: user.id,
+    data: state,
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await window.supabaseClient
+    .from('user_homework_data')
+    .upsert(payload, { onConflict: 'user_id' });
+
+  if(error){
+    console.error('saveState error:', error);
   }
 }
-let state = loadState();
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 function createTask({name, challengeMax=0, rewardMax=0, chargeMax=0, resetRule='none', color=''}) {
   name = normalizeTaskName(name);
@@ -1578,15 +1652,25 @@ function render(){
   renderTable();
   renderTop();
 }
-ensureSample();
-render();
-setInterval(function(){
-  applyAllRules();
-  renderWeekly();
-  renderCharacterProgress();
-  renderTable();
-  renderTop();
-}, 60000);
+window.addEventListener('DOMContentLoaded', async () => {
+  setupAuth();
+
+  state = await loadStateFromCloud();
+
+  if(!state.characters || !state.characters.length){
+    ensureSample();
+    await saveState();
+  }
+
+  render();
+
+  setInterval(function(){
+    applyAllRules();
+    renderWeekly();
+    renderTable();
+    renderTop();
+  }, 60000);
+});
 </script>
 <script type="module">
   import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.8";
@@ -1595,6 +1679,7 @@ setInterval(function(){
   const SUPABASE_KEY = "sb_publishable_9pL-aHb6w2w-n5l4poOAlw_FeuQk4S2";
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  window.supabaseClient = supabase;
   const logoutBtn = document.getElementById("logoutBtn");
 
   async function logout() {
